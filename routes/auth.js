@@ -43,6 +43,22 @@ router.post("/register", async (req, res) => {
     return res.status(500).json({ message: `Internal Server Error: ${error}` });
   }
 });
-// TODO: Login endpoint
+
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+
+    return res.json({ token });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: `Internal Server Error: ${error}` });
+  }
+});
 
 module.exports = router;
