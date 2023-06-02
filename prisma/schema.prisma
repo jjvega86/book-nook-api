@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Favorite {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  bookId        String @unique
+  title         String
+  thumbnail_url String
+  user          User   @relation(fields: [userId], references: [id])
+  userId        String @db.ObjectId
+}
+
+model User {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  email    String     @unique
+  name     String?
+  address  Address?
+  reviews  Review[]
+  favorites Favorite[]
+}
+
+model Review {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  bookId String
+  text   String
+  rating Int
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+}
+
+// Address is an embedded document
+type Address {
+  street String
+  city   String
+  state  String
+  zip    String
+}
