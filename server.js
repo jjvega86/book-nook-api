@@ -1,21 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 
+const auth = require("./routes/auth");
+
 const prisma = require("./db/db");
 const app = express();
 
 // Define routes and middleware
 app.use(cors());
-
-app.get("/", async (req, res) => {
-  const users = await prisma.user.findMany({
-    include: {
-      reviews: true,
-      favorites: true,
-    },
-  });
-  return res.send(users);
-});
+app.use(express.json());
+app.use("/api/auth", auth);
 
 // Close the database connection when the app shuts down
 app.on("close", async () => {

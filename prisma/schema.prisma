@@ -20,11 +20,12 @@ model Favorite {
 }
 
 model User {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  email    String     @unique
-  name     String?
-  address  Address?
-  reviews  Review[]
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  email     String     @unique
+  password  String
+  name      String?
+  address   Address?
+  reviews   Review[]
   favorites Favorite[]
 }
 
