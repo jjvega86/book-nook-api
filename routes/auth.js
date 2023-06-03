@@ -2,10 +2,15 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const prisma = require("../db/db");
 const express = require("express");
+const authenticateToken = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+// Requires valid logged in user
+// TODO: add 'admin' role permissions (see ChatGPT chat)
+router.get("/", authenticateToken, async (req, res) => {
+  console.log(req.user);
+
   const users = await prisma.user.findMany({
     include: {
       reviews: true,
@@ -54,7 +59,7 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
-    return res.json({ token });
+    return res.send({ token });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: `Internal Server Error: ${error}` });
