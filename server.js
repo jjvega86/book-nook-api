@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const auth = require("./routes/auth");
+const reviews = require("./routes/reviews");
 
 const prisma = require("./db/db");
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", auth);
+app.use("/api/reviews", reviews);
 
 // Close the database connection when the app shuts down
 app.on("close", async () => {
