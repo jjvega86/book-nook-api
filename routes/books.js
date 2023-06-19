@@ -7,9 +7,13 @@ router.get("/:bookId", authenticateToken, async (req, res) => {
   try {
     const { user } = req;
     const { bookId } = req.params;
+
     const bookReviews = await prisma.review.findMany({
       where: {
         bookId,
+      },
+      include: {
+        user: true,
       },
     });
 
@@ -17,7 +21,13 @@ router.get("/:bookId", authenticateToken, async (req, res) => {
       _avg: {
         rating: true,
       },
+      where: {
+        bookId,
+      },
     });
+
+    const formattedAverageRating =
+      averageRating._avg.rating !== null ? averageRating._avg.rating : null;
 
     const favoritedUser = await prisma.favorite.findFirst({
       where: {
@@ -27,10 +37,13 @@ router.get("/:bookId", authenticateToken, async (req, res) => {
 
     const customResponse = {
       reviews: bookReviews,
-      averageRating: Number(averageRating._avg.rating.toFixed(2)),
+      averageRating: formattedAverageRating
+        ? Number(formattedAverageRating.toFixed(2))
+        : null,
       favorited: favoritedUser ? true : false,
     };
 
+    console.log(customResponse);
     return res.json(customResponse);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);

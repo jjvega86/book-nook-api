@@ -10,6 +10,7 @@ const prisma = require("./db/db");
 const app = express();
 
 // Define routes and middleware
+// TODO: Add logging middleware
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", auth);
